@@ -1,5 +1,7 @@
 <template>
-  <a-layout-footer class="footer">Arco Pro</a-layout-footer>
+  <a-layout-footer class="footer"
+    >重庆理工大学课程学习平台中台管理 - CQUT.</a-layout-footer
+  >
 </template>
 
 <script lang="ts" setup></script>
