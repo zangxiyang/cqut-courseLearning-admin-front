@@ -28,6 +28,9 @@ import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
 
+import localUserManagerAuth from '@/views/user-manager/auth-manager/locale/zh-CN'
+import localUserManagerUser from '@/views/user-manager/user-manager/locale/zh-CN'
+
 export default {
   'menu.dashboard': '仪表盘',
   'menu.list': '列表页',
@@ -59,4 +62,6 @@ export default {
   ...locale500,
   ...localeUserInfo,
   ...localeUserSetting,
+  ...localUserManagerAuth,
+  ...localUserManagerUser,
 };

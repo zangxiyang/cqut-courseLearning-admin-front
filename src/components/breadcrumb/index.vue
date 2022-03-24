@@ -4,7 +4,12 @@
       <icon-apps />
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
-      {{ $t(item) }}
+      <template v-if="i18">
+        {{ $t(item) }}
+      </template>
+      <template v-else>
+        {{ item }}
+      </template>
     </a-breadcrumb-item>
   </a-breadcrumb>
 </template>
@@ -19,6 +24,12 @@
         return [];
       },
     },
+    i18: {
+      type: Boolean as PropType<boolean>,
+      default(){
+        return true;
+      }
+    }
   });
 </script>
 

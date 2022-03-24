@@ -27,7 +27,7 @@
               <img :src="team.avatar" />
             </a-avatar>
           </template>
-          <template #description> 共{{ team.peopleNumber }}人 </template>
+          <template #description> 共{{ team.peopleNumber }}人</template>
         </a-list-item-meta>
       </a-list-item>
     </a-list>
@@ -35,30 +35,33 @@
 </template>
 
 <script lang="ts" setup>
-  import { queryMyTeamList, MyTeamRecord } from '@/api/user-center';
-  import useRequest from '@/hooks/request';
+import { queryMyTeamList, MyTeamRecord } from "@/api/user-center";
+import useRequest from "@/hooks/request";
 
-  const defaultValue: MyTeamRecord[] = new Array(4).fill({});
-  const { loading, response: teamList } = useRequest<MyTeamRecord[]>(
-    queryMyTeamList,
-    defaultValue
-  );
+const defaultValue: MyTeamRecord[] = new Array(4).fill({});
+const { loading, response: teamList } = useRequest<MyTeamRecord[]>(
+  queryMyTeamList,
+  defaultValue
+);
 </script>
 
 <style scoped lang="less">
-  .general-card {
-    height: 356px;
-    .arco-list-item {
-      height: 72px;
-      padding-left: 0;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--color-neutral-3);
-      &:last-child {
-        border-bottom: none;
-      }
-      .arco-list-item-meta {
-        padding: 0;
-      }
+.general-card {
+  height: 356px;
+
+  .arco-list-item {
+    height: 72px;
+    padding-left: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-neutral-3);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .arco-list-item-meta {
+      padding: 0;
     }
   }
+}
 </style>
