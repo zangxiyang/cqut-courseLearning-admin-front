@@ -1,16 +1,16 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.userManager', 'userManager.auth']"/>
-    <a-card class="general-card" :title="$t('userManager.auth')">
+    <Breadcrumb :items="['menu.userManager', 'userManager.class']"/>
+    <a-card class="general-card" :title="$t('userManager.class')">
 
       <a-row style="margin-bottom: 16px">
         <a-col :span="16">
           <a-space>
-            <a-button type="primary" @click="modalNewRoleVisible = true">
+            <a-button type="primary" @click="modalNewVisible = true">
               <template #icon>
                 <icon-plus />
               </template>
-              新建角色
+              新建班级
             </a-button>
             <a-button @click="fetchData()">
               <template #icon>
@@ -39,17 +39,19 @@
           />
           <a-table-column
             title="角色名"
-            data-index="roleName"
+            data-index="className"
           />
 
           <a-table-column
-            title="是否能被删除"
-            data-index="canDel"
-          >
-            <template #cell="{ record }">
-              <span v-if="record.canDel === 0" class="circle error"></span>
-              <span v-else class="circle pass"></span>
-              {{ record.canDel === 0 ? "不能删除":"能删除" }}
+            title="班级描述"
+            data-index="description">
+            <template #cell="{record}">
+              <template v-if="_.isNil(record.description) || _.trim(record.description) ===''">
+                暂无描述
+              </template>
+              <template v-else>
+                {{record.description}}
+              </template>
             </template>
           </a-table-column>
           <a-table-column
@@ -59,6 +61,7 @@
             <template #cell="{ record }">
               <a-popconfirm content="确认是否要进行删除(这是一个不可逆操作)"
                             @ok="confirmHandleDelRoleOk(record)"
+                            :ok-loading="confirmLoading"
                             type="warning">
                 <a-button v-permission="['admin']"
                           type="text" size="small"
@@ -72,15 +75,21 @@
         </template>
       </a-table>
     </a-card>
-    <a-modal title="新建角色"
+    <a-modal title="新建班级"
              @cancel="modalHandleNewRoleCancel"
-             @ok="modalHandleNewRoleOk"
+             @ok="modalHandleNewClassOk"
              :ok-loading="modalOkLoading"
-             :visible="modalNewRoleVisible">
-      <a-form :model="modalNewRoleForm">
-        <a-form-item field="roleName" label="权限角色名" required>
-          <a-input v-model="modalNewRoleForm.roleName" allow-clear
-                   placeholder="请输入要创建的新角色名"/>
+             :visible="modalNewVisible">
+      <a-form :model="modalNewClassForm">
+        <a-form-item field="className" label="班级名" required>
+          <a-input v-model="modalNewClassForm.className" allow-clear
+                   placeholder="请输入要创建的新班级名"/>
+        </a-form-item>
+        <a-form-item field="description" label="描述信息">
+          <a-textarea v-model="modalNewClassForm.description" allow-clear
+                      placeholder="请输入本班级的一些描述信息"
+                      :max-length="200"
+                      show-word-limit/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -88,19 +97,25 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-  import { Pagination, Options } from '@/types/global';
-  import { addNewRole, delRole, queryAuthInfo, RoleParams, RoleRecord } from "@/api/user-manager";
-  import { HttpResponse } from "@/api/interceptor";
-  import { Message } from "@arco-design/web-vue";
-  import _ from "lodash";
-  import { TableData } from "@arco-design/web-vue/es/table/interface.d";
+import { reactive, ref } from "vue";
+import useLoading from "@/hooks/loading";
+import { Pagination } from "@/types/global";
+import {
+  addNewClass, ClassRecord, delClass,
+  delRole,
+  NewClassRequestDto,
+  queryAuthInfo,
+  queryClass,
+  RoleParams,
+  RoleRecord
+} from "@/api/user-manager";
+import { HttpResponse } from "@/api/interceptor";
+import { Message } from "@arco-design/web-vue";
+import _ from "lodash";
+import { BaseParams } from "@/api/base-model";
 
-  const { loading, setLoading } = useLoading(true);
-  const renderData = ref<RoleRecord[]>([]);
+const { loading, setLoading } = useLoading(true);
+  const renderData = ref<ClassRecord[]>([]);
   const basePagination: Pagination = {
     current: 1,
     pageSize: 10,
@@ -110,11 +125,11 @@
   });
 
   const fetchData = async (
-    params: RoleParams = { page: 1, size: 20 }
+    params: BaseParams = { page: 1, size: 20 }
   ) => {
     setLoading(true);
     try {
-      const { data } = await queryAuthInfo(params);
+      const { data } = await queryClass(params);
       renderData.value = data.list;
       pagination.current = params.page;
       pagination.total = data.total;
@@ -133,33 +148,32 @@
   // 模态框ok loading 动画
   const modalOkLoading = ref<boolean>(false);
 
-  // 新建角色
-  const modalNewRoleVisible = ref<boolean>(false);
-  const modalNewRoleForm = ref<{
-    roleName: string
-  }>({roleName: ''});
-  const modalHandleNewRoleOk = () => {
-    if (_.isNil(modalNewRoleForm.value.roleName) || _.trim(modalNewRoleForm.value.roleName) == ''){
-      Message.error("要创建的角色名不能为空");
+  // 新建班级
+  const modalNewVisible = ref<boolean>(false);
+  const modalNewClassForm = ref<NewClassRequestDto>({className: ''});
+  const modalHandleNewClassOk = () => {
+    if (_.isNil(modalNewClassForm.value.className) || _.trim(modalNewClassForm.value.className) == ''){
+      Message.error("要创建的班级名名不能为空");
       return;
     }
-    fetchNewRole(modalNewRoleForm.value.roleName);
+    fetchNewClass(modalNewClassForm.value);
   }
   const modalHandleNewRoleCancel = () => {
-    modalNewRoleVisible.value = false;
+    modalNewClassForm.value = {className: ''}
+    modalNewVisible.value = false;
   }
-  const fetchNewRole = async (roleName: string) => {
+  const fetchNewClass = async (newClassForm: NewClassRequestDto) => {
     // 开启ok loading 动画
     modalOkLoading.value = true;
     try {
-      const {code} = await addNewRole(roleName) as unknown as HttpResponse;
+      const {code} = await addNewClass(newClassForm) as unknown as HttpResponse;
       if (code === 200){
         // 新建成功后
-        Message.success("创建新权限角色成功");
+        Message.success("创建新班级成功");
         // 重新刷新列表数据
         await fetchData();
         // 关闭模态框
-        modalNewRoleVisible.value = false;
+        modalNewVisible.value = false;
       }
     }catch (e){
 
@@ -168,15 +182,15 @@
     }
   }
 
-  // 删除角色
+  // 删除班级
   const confirmLoading = ref<boolean>(false);
-  const confirmHandleDelRoleOk = (record: RoleRecord)=>{
-    fetchDelRole(record.roleName);
+  const confirmHandleDelRoleOk = (record: ClassRecord)=>{
+    fetchDelRole(record.className);
   }
-  const fetchDelRole = async (roleName: string)=>{
+  const fetchDelRole = async (className: string)=>{
     confirmLoading.value = true;
     try {
-      const {code} = await delRole(roleName) as unknown as HttpResponse;
+      const {code} = await delClass(className) as unknown as HttpResponse;
       if (code === 200) {
         Message.success("删除成功");
         // 重新加载列表数据

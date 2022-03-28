@@ -7,9 +7,16 @@ import { RoleRecord } from "@/api/user-manager";
  * @说明: 基本数据结构
  * @网站: https://www.imsle.com
  */
-
 // 基本返回
-export interface BaseRes <T>{
+export interface BaseRes<T>{
+  code: number;
+  data: T;
+  message: string;
+}
+
+
+// 基本分页返回
+export interface BasePageRes<T>{
   total: number;
   pageNumber: number;
   pageSize: number;

@@ -30,6 +30,7 @@ import localeSettings from './zh-CN/settings';
 
 import localUserManagerAuth from '@/views/user-manager/auth-manager/locale/zh-CN'
 import localUserManagerUser from '@/views/user-manager/user-manager/locale/zh-CN'
+import localUserManagerClass from '@/views/user-manager/class-manager/locale/zh-CN'
 
 export default {
   'menu.dashboard': '仪表盘',
@@ -46,7 +47,6 @@ export default {
   ...localeMessageBox,
   ...localeLogin,
   ...localeWorkplace,
-
   ...localeMonitor,
   ...localeSearchTable,
   ...localeCardList,
@@ -64,4 +64,5 @@ export default {
   ...localeUserSetting,
   ...localUserManagerAuth,
   ...localUserManagerUser,
+  ...localUserManagerClass,
 };

@@ -103,18 +103,27 @@
               const icon = element?.meta?.icon
                 ? `<${element?.meta?.icon}/>`
                 : ``;
+              // If not use i18
+              let elementTitle = '';
+              if (element.meta?.locale != undefined){
+                elementTitle = t(element?.meta?.locale || '');
+              } else elementTitle = element?.meta?.title || '';
               const r = (
                 <a-sub-menu
                   key={element?.name}
                   v-slots={{
                     icon: () => h(compile(icon)),
-                    title: () => h(compile(t(element?.meta?.locale || ''))),
+                    title: () => h(compile(elementTitle)),
                   }}
                 >
                   {element?.children?.map((elem) => {
+                    let eleTitle: string;
+                    if (elem.meta?.locale != undefined){
+                      eleTitle = t(elem?.meta?.locale || '');
+                    } else eleTitle = elem?.meta?.title || '';
                     return (
                       <a-menu-item key={elem.name} onClick={() => goto(elem)}>
-                        {t(elem?.meta?.locale || '')}
+                        {eleTitle}
                         {travel(elem.children ?? [])}
                       </a-menu-item>
                     );
