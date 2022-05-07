@@ -3,7 +3,7 @@ import NProgress from 'nprogress'; // progress bar
 
 import usePermission from '@/hooks/permission';
 import { useUserStore } from '@/store';
-import { isLogin } from '@/utils/auth';
+import { getUserId, isLogin } from "@/utils/auth";
 import appRoutes from '../routes';
 
 export default function setupPermissionGuard(router: Router) {
@@ -29,7 +29,7 @@ export default function setupPermissionGuard(router: Router) {
         crossroads();
       } else {
         try {
-          await userStore.info();
+          await userStore.info(getUserId());
           crossroads();
         } catch (error) {
           next({

@@ -10,7 +10,7 @@
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Arco Pro
+          重庆理工大学课程学习平台中台管理
         </a-typography-title>
         <icon-menu-fold
           v-if="appStore.device === 'mobile'"

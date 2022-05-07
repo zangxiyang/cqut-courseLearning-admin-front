@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
+    <div class="login-form-sub-title">{{ $t('login.form.subTitle') }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
       ref="loginForm"
@@ -11,13 +11,13 @@
       @submit="handleSubmit"
     >
       <a-form-item
-        field="username"
+        field="userName"
         :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input
-          v-model="userInfo.username"
+          v-model="userInfo.userName"
           :placeholder="$t('login.form.userName.placeholder')"
         >
           <template #prefix>
@@ -26,13 +26,13 @@
         </a-input>
       </a-form-item>
       <a-form-item
-        field="password"
+        field="passWord"
         :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input-password
-          v-model="userInfo.password"
+          v-model="userInfo.passWord"
           :placeholder="$t('login.form.password.placeholder')"
           allow-clear
         >
@@ -48,12 +48,12 @@
           </a-checkbox>
           <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
         </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">
+        <a-button type="primary" html-type="submit" shape="round" size="large" long :loading="loading">
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button type="text" long class="login-form-register-btn">
+<!--        <a-button type="text" long class="login-form-register-btn">
           {{ $t('login.form.register') }}
-        </a-button>
+        </a-button>-->
       </a-space>
     </a-form>
   </div>
@@ -75,8 +75,8 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
   const userInfo = reactive({
-    username: 'admin',
-    password: 'admin',
+    userName: 'admin',
+    passWord: 'admin',
   });
   const handleSubmit = async ({
     errors,
@@ -90,7 +90,7 @@
       try {
         await userStore.login(values);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        router.push({
+        await router.push({
           name: (redirect as string) || 'workplace',
           query: {
             ...othersQuery,
@@ -105,7 +105,7 @@
     }
   };
   const setRememberPassword = () => {
-    //
+    // todo
   };
 </script>
 

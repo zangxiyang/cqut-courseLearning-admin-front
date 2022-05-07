@@ -5,7 +5,7 @@ import {
   getUserInfo,
   LoginData,
 } from '@/api/user';
-import { setToken, clearToken } from '@/utils/auth';
+import { setToken, clearToken, setUserId } from "@/utils/auth";
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
 
@@ -53,26 +53,27 @@ const useUserStore = defineStore('user', {
     },
 
     // Get user's information
-    async info() {
-      const res = await getUserInfo();
+    async info(id: number) {
+      const res = await getUserInfo(id);
 
       this.setInfo(res.data);
     },
 
-    // Login
+    // 登录
     async login(loginForm: LoginData) {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.token);
+        setUserId(res.data.id);
+        this.setInfo(res.data)
       } catch (err) {
         clearToken();
         throw err;
       }
     },
 
-    // Logout
+    // 登出
     async logout() {
-      await userLogout();
 
       this.resetInfo();
       clearToken();

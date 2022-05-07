@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
+import { Message, Modal, Notification } from "@arco-design/web-vue";
 import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
@@ -30,15 +30,33 @@ axios.interceptors.request.use(
   },
   (error) => {
     // do something
+    console.log(error);
+    Message.error(error.message)
     return Promise.reject(error);
   }
 );
+
 // add response interceptors
 axios.interceptors.response.use(
+  (resp)=>{
+    console.log(resp);
+    return resp.data
+  },
+  ({response})=>{
+    Notification.error({
+      title: '出错了',
+      content: `错误码: ${response.status}, 错误信息: ${response.statusText}`
+    })
+    console.log(response);
+  })
+
+
+/*axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
+
     const res = response.data;
     console.log(res);
-    // if the custom code is not 200, it is judged as an error.
+    /!*!// if the custom code is not 200, it is judged as an error.
     if (res.code !== 200) {
       Message.error({
         content: res.message || 'Error',
@@ -62,15 +80,16 @@ axios.interceptors.response.use(
           },
         });
       }
-      return Promise.reject(new Error(res.message || 'Error'));
-    }
+      return Promise.reject(response);
+    }*!/
     return res;
   },
-  (error) => {
+  error => {
+    console.log(error);
     Message.error({
-      content: error.msg,
+      content: error,
       duration: 5 * 1000,
     });
     return Promise.reject(error);
   }
-);
+);*/
