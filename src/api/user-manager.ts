@@ -12,6 +12,7 @@ import qs from "query-string";
 // 角色列表
 export interface RoleRecord{
   id: number;
+  role: string
   roleName: string;
   canDel: number;
 }
@@ -133,8 +134,8 @@ export function changeUserInfo(dto: ChangeUserRequestDto){
 }
 
 // 新建角色
-export function addNewRole(roleName: string){
-  return axios.post(`/course-auth/auth/admin/role/${roleName}`);
+export function addNewRole(roleName: string, role: string){
+  return axios.post(`/course-auth/auth/admin/role/${roleName}/${role}`);
 }
 // 删除角色
 export function delRole(roleName: string){

@@ -41,6 +41,10 @@
             title="角色名"
             data-index="roleName"
           />
+          <a-table-column
+            title="权限"
+            data-index="role"
+          />
 
           <a-table-column
             title="是否能被删除"
@@ -81,6 +85,10 @@
         <a-form-item field="roleName" label="权限角色名" required>
           <a-input v-model="modalNewRoleForm.roleName" allow-clear
                    placeholder="请输入要创建的新角色名"/>
+        </a-form-item>
+        <a-form-item field="role" label="role名" required>
+          <a-input v-model="modalNewRoleForm.role" allow-clear
+                   placeholder="请输入要创建的新角色名(英文)"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -136,23 +144,25 @@
   // 新建角色
   const modalNewRoleVisible = ref<boolean>(false);
   const modalNewRoleForm = ref<{
-    roleName: string
-  }>({roleName: ''});
+    roleName: string,
+    role: string
+  }>({roleName: '', role: ''});
   const modalHandleNewRoleOk = () => {
-    if (_.isNil(modalNewRoleForm.value.roleName) || _.trim(modalNewRoleForm.value.roleName) == ''){
+    if (_.isNil(modalNewRoleForm.value.roleName) || _.trim(modalNewRoleForm.value.roleName) == '' ||
+    _.isNil(modalNewRoleForm.value.role) || _.trim(modalNewRoleForm.value.role) == ''){
       Message.error("要创建的角色名不能为空");
       return;
     }
-    fetchNewRole(modalNewRoleForm.value.roleName);
+    fetchNewRole(modalNewRoleForm.value.roleName, modalNewRoleForm.value.role);
   }
   const modalHandleNewRoleCancel = () => {
     modalNewRoleVisible.value = false;
   }
-  const fetchNewRole = async (roleName: string) => {
+  const fetchNewRole = async (roleName: string, role: string) => {
     // 开启ok loading 动画
     modalOkLoading.value = true;
     try {
-      const {code} = await addNewRole(roleName) as unknown as HttpResponse;
+      const {code} = await addNewRole(roleName,role) as unknown as HttpResponse;
       if (code === 200){
         // 新建成功后
         Message.success("创建新权限角色成功");

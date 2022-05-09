@@ -3,7 +3,7 @@ export default {
   name: 'userManager',
   component: () => import('@/views/user-manager/index.vue'),
   meta: {
-    title: '用户管理',
+    locale: 'menu.userManager',
     icon: 'icon-user-group',
     requiresAuth: true,
     order: 2,
@@ -14,7 +14,7 @@ export default {
       name: 'user',
       component: () => import('@/views/user-manager/user-manager/index.vue'),
       meta: {
-        title: '用户管理',
+        locale: 'userManager.user',
         requiresAuth: true,
         roles: ['admin']
       },
@@ -24,7 +24,7 @@ export default {
       name: 'auth',
       component: () => import('@/views/user-manager/auth-manager/index.vue'),
       meta: {
-        title: '权限管理',
+        locale: 'userManager.auth',
         requiresAuth: true,
         roles: ['admin']
       },
@@ -34,7 +34,7 @@ export default {
       name: 'class',
       component: ()=> import('@/views/user-manager/class-manager/index.vue'),
       meta: {
-        title: '班级管理',
+        locale: 'userManager.class',
         requiresAuth: true,
         roles: ['admin']
       }

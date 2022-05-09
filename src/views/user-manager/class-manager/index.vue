@@ -38,7 +38,7 @@
             data-index="id"
           />
           <a-table-column
-            title="角色名"
+            title="班级名"
             data-index="className"
           />
 

@@ -37,7 +37,7 @@ axios.interceptors.request.use(
 );
 
 // add response interceptors
-axios.interceptors.response.use(
+/*axios.interceptors.response.use(
   (resp)=>{
     console.log(resp);
     return resp.data
@@ -48,15 +48,15 @@ axios.interceptors.response.use(
       content: `错误码: ${response.status}, 错误信息: ${response.statusText}`
     })
     console.log(response);
-  })
+  })*/
 
 
-/*axios.interceptors.response.use(
+axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
 
     const res = response.data;
     console.log(res);
-    /!*!// if the custom code is not 200, it is judged as an error.
+    // if the custom code is not 200, it is judged as an error.
     if (res.code !== 200) {
       Message.error({
         content: res.message || 'Error',
@@ -81,15 +81,14 @@ axios.interceptors.response.use(
         });
       }
       return Promise.reject(response);
-    }*!/
+    }
     return res;
   },
-  error => {
-    console.log(error);
+  ({response}) => {
     Message.error({
-      content: error,
+      content: response.statusText,
       duration: 5 * 1000,
     });
-    return Promise.reject(error);
+    return Promise.reject(response.data);
   }
-);*/
+);
