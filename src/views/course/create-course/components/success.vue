@@ -6,7 +6,7 @@
       subtitle="课程已被成功创建, 详情请查看前台页面"
     />
     <a-space :size="16">
-      <a-button key="view" type="primary">
+      <a-button key="view" type="primary" @click="onDetailClick">
         {{ $t('stepForm.button.view') }}
       </a-button>
       <a-button key="again" type="secondary" @click="oneMore">
@@ -26,10 +26,18 @@
 </template>
 
 <script lang="ts" setup>
+  import { useRouter } from "vue-router";
+
   const emits = defineEmits(['changeStep']);
   const oneMore = () => {
     emits('changeStep', 'reCreated');
   };
+  const router = useRouter();
+  const onDetailClick = () => {
+    router.push('/course/manager')
+    setTimeout(()=>emits('changeStep', 'reCreated'), 500);
+
+  }
 </script>
 
 <style scoped lang="less">

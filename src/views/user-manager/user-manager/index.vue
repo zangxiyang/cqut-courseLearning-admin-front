@@ -175,6 +175,7 @@
           <a-table-column
             title="Id"
             data-index="id"
+            :width="70"
           />
           <a-table-column
             title="用户名"

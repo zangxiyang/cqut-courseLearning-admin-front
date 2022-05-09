@@ -5,6 +5,7 @@
  * @说明: 课程
  */
 import axios from "axios";
+import { BasePageRes, BaseParams } from "@/api/base-model";
 
 export interface IModelChapterInfo {
   chapterName?: string;
@@ -41,6 +42,27 @@ export interface UserDetailModel{
   lastLoginDate: string
 }
 
+export interface Course{
+  id: number,
+  name: string,
+  subName: string,
+  description: string,
+  authorTeacherId: number,
+  teacherName: string,
+  classId: number,
+  className: string,
+  thumb: string,
+  status: number,
+  detailId: number,
+  publishDate: string
+}
+
+export interface Teacher{
+  id: number
+  nickName: string
+}
+
+
 // 创建班级
 export function createCourse(dto: IModelUnitCreateCourse){
   return axios.post(`/course-course/course/admin/course`,dto)
@@ -48,4 +70,23 @@ export function createCourse(dto: IModelUnitCreateCourse){
 // 获得用户详情
 export function getUserDetail(id: number){
   return axios.get<UserDetailModel>(`/course-auth/user/userDetail/${id}`)
+}
+
+// 查询课程列表
+export function queryCourse(params: BaseParams){
+  return axios.get<BasePageRes<Course[]>>(`/course-course/course/course`, {params});
+}
+
+// 修改课程信息
+export function updateCourseBaseInfo(params: Partial<Course>){
+  return axios.put(`/course-course/course/admin/course`,params)
+}
+// 删除课程
+export function delCourse(id: number){
+  return axios.delete(`/course-course/course/admin/course/${id}`);
+}
+
+// 查询老师列表
+export function queryTeacher(){
+  return axios.get<Teacher[]>(`/course-auth/user/teacher`)
 }

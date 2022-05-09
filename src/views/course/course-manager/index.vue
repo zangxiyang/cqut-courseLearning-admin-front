@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.course', 'menu.courseManager']"/>
+    <Breadcrumb :items="['menu.course', 'menu.courseManager']" />
     <a-card class="general-card" :title="$t('menu.courseManager')">
 
       <a-row style="margin-bottom: 16px">
@@ -14,7 +14,7 @@
             </a-button>
             <a-button @click="fetchData()">
               <template #icon>
-                <icon-refresh/>
+                <icon-refresh />
               </template>
               刷新数据
             </a-button>
@@ -30,7 +30,7 @@
         @page-change="onPageChange"
       >
         <template #pagination-left>
-          共{{pagination.total}}条数据
+          共{{ pagination.total }}条数据
         </template>
         <template #columns>
           <a-table-column
@@ -38,33 +38,65 @@
             data-index="id"
           />
           <a-table-column
-            title="角色名"
-            data-index="roleName"
-          />
+            title="课程名"
+            data-index="name">
+            <template #cell="{record}">
+              <a-avatar :size="40" shape="square" style="margin-right: 5px">
+                <img :src="record.thumb">
+              </a-avatar>
+              <span>{{ record.name }}</span>
+            </template>
+          </a-table-column>
           <a-table-column
-            title="权限"
-            data-index="role"
+            title="教师"
+            data-index="teacherName"
           />
 
           <a-table-column
-            title="是否能被删除"
-            data-index="canDel"
-          >
-            <template #cell="{ record }">
-              <span v-if="record.canDel === 0" class="circle error"></span>
-              <span v-else class="circle pass"></span>
-              {{ record.canDel === 0 ? "不能删除":"能删除" }}
+            title="所属班级"
+            data-index="className"
+          />
+          <a-table-column title="发布时间" data-index="publishDate" />
+
+          <a-table-column
+            title="状态"
+            data-index="status">
+
+            <template #cell="{record}">
+              <a-switch
+                :default-checked="record.status === 1"
+                :loading="switchLoading"
+                @change="fetchSwitchCourseStatus(record)"
+                checked-color="#19af00"
+                unchecked-color="#F53F3F">
+                <template #checked>
+                  上架
+                </template>
+                <template #unchecked>
+                  下架
+                </template>
+              </a-switch>
             </template>
+
           </a-table-column>
+
+
           <a-table-column
             :title="$t('searchTable.columns.operations')"
             data-index="operations"
           >
             <template #cell="{ record }">
+              <a-button v-permission="['admin']"
+                        @click="openModalTeacher(record)"
+                        size="small"
+                        type="text">
+                指派教师
+              </a-button>
               <a-popconfirm content="确认是否要进行删除(这是一个不可逆操作)"
-                            @ok="confirmHandleDelRoleOk(record)"
+                            @ok="confirmHandleDelCourseOk(record)"
+                            :ok-loading="confirmLoading"
                             type="warning">
-                <a-button v-permission="['admin']"
+                <a-button v-permission="['admin','teacher']"
                           type="text" size="small"
                           status="danger"
                           :disabled="record.canDel === 0">
@@ -76,19 +108,19 @@
         </template>
       </a-table>
     </a-card>
-    <a-modal title="新建角色"
-             @cancel="modalHandleNewRoleCancel"
-             @ok="modalHandleNewRoleOk"
+    <a-modal title="指派教师"
+             @cancel="modalHandleTeacherCancel"
+             @ok="modalHandleTeacherOk"
              :ok-loading="modalOkLoading"
-             :visible="modalNewRoleVisible">
-      <a-form :model="modalNewRoleForm">
-        <a-form-item field="roleName" label="权限角色名" required>
-          <a-input v-model="modalNewRoleForm.roleName" allow-clear
-                   placeholder="请输入要创建的新角色名"/>
-        </a-form-item>
-        <a-form-item field="role" label="role名" required>
-          <a-input v-model="modalNewRoleForm.role" allow-clear
-                   placeholder="请输入要创建的新角色名(英文)"/>
+             :visible="modalTeacherVisible">
+      <a-form :model="modalTeacherForm">
+        <a-form-item field="authorTeacherId" label="教师" required>
+          <a-select
+            v-model="modalTeacherForm.authorTeacherId"
+            placeholder="请选择指派的老师"
+            @focus="fetchQueryTeacher"
+            :loading="teacherLoading"
+            :options="teacherOptions" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -96,33 +128,35 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive } from 'vue';
-import { useI18n } from 'vue-i18n';
-import useLoading from '@/hooks/loading';
-import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-import { Pagination, Options } from '@/types/global';
+import { computed, ref, reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import useLoading from "@/hooks/loading";
+import { queryPolicyList, PolicyRecord, PolicyParams } from "@/api/list";
+import { Pagination, Options } from "@/types/global";
 import { addNewRole, delRole, queryAuthInfo, RoleParams, RoleRecord } from "@/api/user-manager";
 import { HttpResponse } from "@/api/interceptor";
 import { Message } from "@arco-design/web-vue";
 import _ from "lodash";
 import { TableData } from "@arco-design/web-vue/es/table/interface.d";
+import { Course, delCourse, queryCourse, queryTeacher, Teacher, updateCourseBaseInfo } from "@/api/course";
+import { BaseParams } from "@/api/base-model";
 
 const { loading, setLoading } = useLoading(true);
-const renderData = ref<RoleRecord[]>([]);
+const renderData = ref<Course[]>([]);
 const basePagination: Pagination = {
   current: 1,
-  pageSize: 10,
+  pageSize: 10
 };
 const pagination = reactive({
-  ...basePagination,
+  ...basePagination
 });
 
 const fetchData = async (
-  params: RoleParams = { page: 1, size: 20 }
+  params: BaseParams = { page: 1, size: 20 }
 ) => {
   setLoading(true);
   try {
-    const { data } = await queryAuthInfo(params);
+    const { data } = await queryCourse(params);
     renderData.value = data.list;
     pagination.current = params.page;
     pagination.total = data.total;
@@ -133,7 +167,7 @@ const fetchData = async (
   }
 };
 const onPageChange = (current: number) => {
-  fetchData({ ...basePagination, page: current, size:basePagination.pageSize });
+  fetchData({ ...basePagination, page: current, size: basePagination.pageSize });
 };
 
 fetchData();
@@ -141,67 +175,106 @@ fetchData();
 // 模态框ok loading 动画
 const modalOkLoading = ref<boolean>(false);
 
-// 新建角色
-const modalNewRoleVisible = ref<boolean>(false);
-const modalNewRoleForm = ref<{
-  roleName: string,
-  role: string
-}>({roleName: '', role: ''});
-const modalHandleNewRoleOk = () => {
-  if (_.isNil(modalNewRoleForm.value.roleName) || _.trim(modalNewRoleForm.value.roleName) == '' ||
-    _.isNil(modalNewRoleForm.value.role) || _.trim(modalNewRoleForm.value.role) == ''){
-    Message.error("要创建的角色名不能为空");
+// 指派教师
+const modalTeacherVisible = ref<boolean>(false);
+const modalTeacherForm = ref<Partial<Course>>({});
+const openModalTeacher = async (record: Course) => {
+  modalTeacherForm.value.id = record.id;
+  modalTeacherForm.value.authorTeacherId = record.authorTeacherId;
+  await fetchQueryTeacher();
+  modalTeacherVisible.value = true;
+};
+const modalHandleTeacherOk = () => {
+  if (_.isNil(modalTeacherForm.value.authorTeacherId) && _.isNil(modalTeacherForm.value.id)) {
+    Message.error("课程和教师不能为空，请检查后重新提交");
     return;
   }
-  fetchNewRole(modalNewRoleForm.value.roleName, modalNewRoleForm.value.role);
-}
-const modalHandleNewRoleCancel = () => {
-  modalNewRoleVisible.value = false;
-}
-const fetchNewRole = async (roleName: string, role: string) => {
+  fetchOrderTeacher();
+};
+const modalHandleTeacherCancel = () => {
+  modalTeacherForm.value = {} as Course;
+  modalTeacherVisible.value = false;
+};
+const fetchOrderTeacher = async () => {
   // 开启ok loading 动画
   modalOkLoading.value = true;
   try {
-    const {code} = await addNewRole(roleName,role) as unknown as HttpResponse;
-    if (code === 200){
-      // 新建成功后
-      Message.success("创建新权限角色成功");
-      // 重新刷新列表数据
-      await fetchData();
-      // 关闭模态框
-      modalNewRoleVisible.value = false;
-    }
-  }catch (e){
+    // 新建成功后
+    await updateCourseBaseInfo(modalTeacherForm.value);
+    Message.success("指派教师成功");
+    // 重新刷新列表数据
+    await fetchData();
+    // 关闭模态框
+    modalTeacherVisible.value = false;
+  } catch (e) {
 
   } finally {
     modalOkLoading.value = false;
   }
-}
+};
 
-// 删除角色
+
+// 上架下架课程
+const switchLoading = ref(false);
+const fetchSwitchCourseStatus = async (record: Course) => {
+  switchLoading.value = true;
+  try {
+    const id = record.id;
+    const status = record.status === 0 ? 1 : 0;
+    await updateCourseBaseInfo({ id, status });
+    Message.success("课程状态更新成功");
+  } finally {
+    switchLoading.value = false;
+  }
+};
+
+// 加载老师列表
+const teacherListData = ref<Teacher[]>([]);
+const teacherLoading = ref(false);
+const fetchQueryTeacher = async () => {
+  teacherLoading.value = true;
+  try {
+    const { data } = await queryTeacher();
+    teacherListData.value = data;
+  } catch (e) {
+
+  } finally {
+    teacherLoading.value = false;
+  }
+};
+const teacherOptions = computed<Options[]>(() => {
+  return teacherListData.value.map((val) => {
+    return {
+      label: val.nickName,
+      value: val.id
+    };
+  });
+});
+
+
+// 删除课程
 const confirmLoading = ref<boolean>(false);
-const confirmHandleDelRoleOk = (record: RoleRecord)=>{
-  fetchDelRole(record.roleName);
-}
-const fetchDelRole = async (roleName: string)=>{
+const confirmHandleDelCourseOk = (record: Course) => {
+  fetchDelCourse(record.id);
+};
+const fetchDelCourse = async (id: number) => {
   confirmLoading.value = true;
   try {
-    const {code} = await delRole(roleName) as unknown as HttpResponse;
-    if (code === 200) {
-      Message.success("删除成功");
-      // 重新加载列表数据
-      await fetchData();
-    }
+    await delCourse(id);
+    Message.success("删除成功");
+    // 重新加载列表数据
+    await fetchData();
   } finally {
     confirmLoading.value = false;
   }
-}
+};
 </script>
 
 <style scoped lang="less">
 .container {
   padding: 0 20px 20px 20px;
 }
+
 :deep(.arco-table-th) {
   &:last-child {
     .arco-table-th-item-title {
