@@ -39,6 +39,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.0.9",
     "query-string": "^7.0.1",
+    "vod-js-sdk-v6": "^1.4.13",
     "vue": "^3.2.16",
     "vue-echarts": "^6.0.0",
     "vue-i18n": "^9.2.0-beta.17",

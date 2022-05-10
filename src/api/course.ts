@@ -5,7 +5,8 @@
  * @说明: 课程
  */
 import axios from "axios";
-import { BasePageRes, BaseParams } from "@/api/base-model";
+import { BasePageRes, BaseParams, BaseRes } from "@/api/base-model";
+import { HttpResponse } from "@/api/interceptor";
 
 export interface IModelChapterInfo {
   chapterName?: string;
@@ -136,7 +137,12 @@ export function addKnowledge(dto: Knowledge) {
   return axios.post(`/course-course/know/admin/know`, dto);
 }
 export function delKnowledge(id: number){
-  return axios.delete(`/course-course/know/admin/know/${id}`, )
+  return axios.delete(`/course-course/know/admin/know/${id}` )
+}
+
+// 获取上传视频许可签名
+export function getSignature() {
+  return axios.get(`/course-cos/vod/sign`);
 }
 
 

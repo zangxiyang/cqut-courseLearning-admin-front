@@ -40,6 +40,16 @@ export default {
       },
     },
     {
+      path: 'vod',
+      name: 'uploadVod',
+      component: () => import('@/views/course/vod-upload/index.vue'),
+      meta: {
+        locale: 'menu.vodUpload',
+        requiresAuth: true,
+        roles: ['admin','teacher'],
+      },
+    },
+    {
       path: 'create',
       name: 'courseCreate',
       component: () => import('@/views/course/create-course/index.vue'),
