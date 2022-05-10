@@ -185,11 +185,11 @@ const modalKnowledgeForm = ref<Knowledge>({});
 
 
 const modalHandleKnowledgeOk = () => {
-  // if (_.isNil(modalKnowledgeForm.value.authorTeacherId) && _.isNil(modalKnowledgeForm.value.id)) {
-  //   Message.error("课程和教师不能为空，请检查后重新提交");
-  //   return;
-  // }
-  // fetchOrderTeacher();
+  if (_.isNil(modalKnowledgeForm.value.name) && modalKnowledgeForm.value.name !== '') {
+    Message.error("知识点名不能为空，请检查后重新提交");
+    return;
+  }
+  fetchAddKnowledge();
 };
 const modalHandleKnowledgeCancel = () => {
   modalKnowledgeForm.value = {} as Knowledge;
@@ -264,19 +264,6 @@ const onError = (resp) => {
 };
 
 
-// 上架下架课程
-const switchLoading = ref(false);
-const fetchSwitchCourseStatus = async (record: Course) => {
-  switchLoading.value = true;
-  try {
-    const id = record.id;
-    const status = record.status === 0 ? 1 : 0;
-    await updateCourseBaseInfo({ id, status });
-    Message.success("课程状态更新成功");
-  } finally {
-    switchLoading.value = false;
-  }
-};
 
 
 // 删除课程
