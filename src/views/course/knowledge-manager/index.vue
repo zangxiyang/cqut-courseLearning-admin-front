@@ -133,7 +133,7 @@ import { TableData } from "@arco-design/web-vue/es/table/interface.d";
 import {
   addKnowledge,
   Course,
-  delCourse,
+  delCourse, delKnowledge,
   Knowledge,
   queryCourse,
   queryKnowledge,
@@ -268,13 +268,13 @@ const onError = (resp) => {
 
 // 删除课程
 const confirmLoading = ref<boolean>(false);
-const confirmHandleDelCourseOk = (record: Course) => {
-  fetchDelCourse(record.id);
+const confirmHandleDelCourseOk = (record: Knowledge) => {
+  fetchDelKnowledge(record.id);
 };
-const fetchDelCourse = async (id: number) => {
+const fetchDelKnowledge = async (id: number) => {
   confirmLoading.value = true;
   try {
-    await delCourse(id);
+    await delKnowledge(id);
     Message.success("删除成功");
     // 重新加载列表数据
     await fetchData();

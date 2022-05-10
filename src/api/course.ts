@@ -13,10 +13,11 @@ export interface IModelChapterInfo {
   nodes?: IModelChapterNode[];
 }
 
-export interface IModelChapterNode{
+export interface IModelChapterNode {
   nodeName?: string;
   videoUrl?: string;
 }
+
 export interface IModelCourseBaseInfo {
   name?: string;            // 课程名
   subName?: string;         // 课程子标题
@@ -26,23 +27,24 @@ export interface IModelCourseBaseInfo {
   thumb?: string;           // 课程头图链接
   content?: string;         // 课程详情
 }
+
 export type IModelUnitCreateCourse = IModelCourseBaseInfo & IModelChapterInfo
 
-export interface UserDetailModel{
-  id: number
-  userName: string
-  roleName: string
-  phone: string
-  nickName: string
-  sex: number
-  school: string
-  description: string
-  className: string
-  createDate: string
-  lastLoginDate: string
+export interface UserDetailModel {
+  id: number;
+  userName: string;
+  roleName: string;
+  phone: string;
+  nickName: string;
+  sex: number;
+  school: string;
+  description: string;
+  className: string;
+  createDate: string;
+  lastLoginDate: string;
 }
 
-export interface Course{
+export interface Course {
   id: number,
   name: string,
   subName: string,
@@ -56,56 +58,85 @@ export interface Course{
   detailId: number,
   publishDate: string
 }
-export interface Knowledge{
-  id?: number
-  name?: string
-  description?: string
-  createDate?: string
-  fileName?: string
-  url?: string
+
+export interface Knowledge {
+  id?: number;
+  name?: string;
+  description?: string;
+  createDate?: string;
+  fileName?: string;
+  url?: string;
 }
 
-export interface Teacher{
-  id: number
-  nickName: string
+export interface CourseFile {
+  courseId: number,
+  cosId: number,
+  fileName: string,
+  fileType: string,
+  userName: string,
+  nickName: string,
+  url: string,
+  createDate: string
+}
+
+export interface Teacher {
+  id: number;
+  nickName: string;
 }
 
 
 // 创建班级
-export function createCourse(dto: IModelUnitCreateCourse){
-  return axios.post(`/course-course/course/admin/course`,dto)
+export function createCourse(dto: IModelUnitCreateCourse) {
+  return axios.post(`/course-course/course/admin/course`, dto);
 }
+
 // 获得用户详情
-export function getUserDetail(id: number){
-  return axios.get<UserDetailModel>(`/course-auth/user/userDetail/${id}`)
+export function getUserDetail(id: number) {
+  return axios.get<UserDetailModel>(`/course-auth/user/userDetail/${id}`);
 }
 
 // 查询课程列表
-export function queryCourse(params: BaseParams){
-  return axios.get<BasePageRes<Course[]>>(`/course-course/course/course`, {params});
+export function queryCourse(params: BaseParams) {
+  return axios.get<BasePageRes<Course[]>>(`/course-course/course/course`, { params });
+}
+
+// 查询课程文件列表
+export function queryCourseFile(params: BaseParams) {
+  return axios.get<BasePageRes<CourseFile[]>>(`/course-course/course/courseFile`, { params });
+}
+
+// 删除课程文件
+export function delCourseFile(cosId: number, courseId: number) {
+  return axios.delete(`/course-course/course/admin/course/file`, { data: { cosId, courseId } });
 }
 
 // 修改课程信息
-export function updateCourseBaseInfo(params: Partial<Course>){
-  return axios.put(`/course-course/course/admin/course`,params)
+export function updateCourseBaseInfo(params: Partial<Course>) {
+  return axios.put(`/course-course/course/admin/course`, params);
 }
+
 // 删除课程
-export function delCourse(id: number){
+export function delCourse(id: number) {
   return axios.delete(`/course-course/course/admin/course/${id}`);
 }
 
 // 查询老师列表
-export function queryTeacher(){
-  return axios.get<Teacher[]>(`/course-auth/user/teacher`)
+export function queryTeacher() {
+  return axios.get<Teacher[]>(`/course-auth/user/teacher`);
 }
 
 
 // 查询知识点列表
-export function queryKnowledge(params: BaseParams){
-  return axios.get<BasePageRes<Knowledge[]>>(`/course-course/know/admin/know`, {params})
+export function queryKnowledge(params: BaseParams) {
+  return axios.get<BasePageRes<Knowledge[]>>(`/course-course/know/admin/know`, { params });
 }
 
 // 新建知识点
-export function addKnowledge(dto: Knowledge){
+export function addKnowledge(dto: Knowledge) {
   return axios.post(`/course-course/know/admin/know`, dto);
 }
+export function delKnowledge(id: number){
+  return axios.delete(`/course-course/know/admin/know/${id}`, )
+}
+
+
