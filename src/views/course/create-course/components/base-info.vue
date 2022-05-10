@@ -126,6 +126,7 @@
         @progress="onProgress"
         @success="onSuccess"
         @error="onError"
+        @before-upload="onBeforeUpload"
       >
         <template #upload-button>
           <div
@@ -193,7 +194,7 @@ import { ClassRecord, queryClassList } from "@/api/user-manager";
 import { Options } from "@/types/global";
 import { getToken, getUserId } from "@/utils/auth";
 import { FileItem } from "@arco-design/web-vue/es/upload/interfaces";
-import { Message } from "@arco-design/web-vue";
+import { Message, Modal } from "@arco-design/web-vue";
 
 const props = defineProps({
   clear: Boolean as PropType<boolean>
@@ -276,9 +277,15 @@ const onChange = (_, currentFile: FileItem) => {
     ...currentFile
     // url: URL.createObjectURL(currentFile.file),
   };
-  fileName.value = file.value.name;
-  fileType.value = file.value.file.type;
 };
+const onBeforeUpload = (file)=>{
+  return new Promise((resolve, reject) => {
+    fileName.value = file.name;
+    fileType.value = file.type;
+    return resolve(true);
+  });
+}
+
 const onProgress = (currentFile) => {
   file.value = currentFile;
 };

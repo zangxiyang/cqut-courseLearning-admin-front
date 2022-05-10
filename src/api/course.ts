@@ -56,6 +56,14 @@ export interface Course{
   detailId: number,
   publishDate: string
 }
+export interface Knowledge{
+  id?: number
+  name?: string
+  description?: string
+  createDate?: string
+  fileName?: string
+  url?: string
+}
 
 export interface Teacher{
   id: number
@@ -89,4 +97,15 @@ export function delCourse(id: number){
 // 查询老师列表
 export function queryTeacher(){
   return axios.get<Teacher[]>(`/course-auth/user/teacher`)
+}
+
+
+// 查询知识点列表
+export function queryKnowledge(params: BaseParams){
+  return axios.get<BasePageRes<Knowledge[]>>(`/course-course/know/admin/know`, {params})
+}
+
+// 新建知识点
+export function addKnowledge(dto: Knowledge){
+  return axios.post(`/course-course/know/admin/know`, dto);
 }

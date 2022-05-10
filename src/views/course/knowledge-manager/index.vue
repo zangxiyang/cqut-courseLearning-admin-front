@@ -1,129 +1,24 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
-      <a-row>
-        <a-col :flex="1">
-          <a-form
-            :model="formModel"
-            :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 18 }"
-            label-align="left"
-          >
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item
-                  field="number"
-                  :label="$t('searchTable.form.number')"
-                >
-                  <a-input
-                    v-model="formModel.number"
-                    :placeholder="$t('searchTable.form.number.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="name" :label="$t('searchTable.form.name')">
-                  <a-input
-                    v-model="formModel.name"
-                    :placeholder="$t('searchTable.form.name.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="contentType"
-                  :label="$t('searchTable.form.contentType')"
-                >
-                  <a-select
-                    v-model="formModel.contentType"
-                    :options="contentTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="filterType"
-                  :label="$t('searchTable.form.filterType')"
-                >
-                  <a-select
-                    v-model="formModel.filterType"
-                    :options="filterTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="createdTime"
-                  :label="$t('searchTable.form.createdTime')"
-                >
-                  <a-range-picker
-                    v-model="formModel.createdTime"
-                    style="width: 100%"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="status"
-                  :label="$t('searchTable.form.status')"
-                >
-                  <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary" @click="search">
-              <template #icon>
-                <icon-search />
-              </template>
-              {{ $t('searchTable.form.search') }}
-            </a-button>
-            <a-button @click="reset">
-              <template #icon>
-                <icon-refresh />
-              </template>
-              {{ $t('searchTable.form.reset') }}
-            </a-button>
-          </a-space>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0" />
+    <Breadcrumb :items="['menu.course', 'menu.knowledgeManager']" />
+    <a-card class="general-card" :title="$t('menu.knowledgeManager')">
+
       <a-row style="margin-bottom: 16px">
         <a-col :span="16">
           <a-space>
-            <a-button type="primary">
+            <a-button type="primary" @click="modalKnowledgeVisible = true">
               <template #icon>
                 <icon-plus />
               </template>
-              {{ $t('searchTable.operation.create') }}
+              新建知识点
             </a-button>
-            <a-upload action="/">
-              <template #upload-button>
-                <a-button>
-                  {{ $t('searchTable.operation.import') }}
-                </a-button>
+            <a-button @click="fetchData()">
+              <template #icon>
+                <icon-refresh />
               </template>
-            </a-upload>
+              刷新数据
+            </a-button>
           </a-space>
-        </a-col>
-        <a-col :span="8" style="text-align: right">
-          <a-button>
-            <template #icon>
-              <icon-download />
-            </template>
-            {{ $t('searchTable.operation.download') }}
-          </a-button>
         </a-col>
       </a-row>
       <a-table
@@ -134,163 +29,140 @@
         :bordered="false"
         @page-change="onPageChange"
       >
+        <template #pagination-left>
+          共{{ pagination.total }}条数据
+        </template>
         <template #columns>
           <a-table-column
-            :title="$t('searchTable.columns.number')"
-            data-index="number"
+            title="Id"
+            data-index="id"
           />
           <a-table-column
-            :title="$t('searchTable.columns.name')"
-            data-index="name"
-          />
+            title="知识点名"
+            data-index="name"/>
+
+
           <a-table-column
-            :title="$t('searchTable.columns.contentType')"
-            data-index="contentType"
-          >
-            <template #cell="{ record }">
-              <a-space>
-                <a-avatar
-                  v-if="record.contentType === 'img'"
-                  :size="16"
-                  shape="square"
-                >
-                  <img
-                    alt="avatar"
-                    src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
-                  />
-                </a-avatar>
-                <a-avatar
-                  v-else-if="record.contentType === 'horizontalVideo'"
-                  :size="16"
-                  shape="square"
-                >
-                  <img
-                    alt="avatar"
-                    src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77721e365eb2ab786c889682cbc721c1.svg~tplv-49unhts6dw-image.image"
-                  />
-                </a-avatar>
-                <a-avatar v-else :size="16" shape="square">
-                  <img
-                    alt="avatar"
-                    src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/ea8b09190046da0ea7e070d83c5d1731.svg~tplv-49unhts6dw-image.image"
-                  />
-                </a-avatar>
-                {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
-              </a-space>
+            title="描述信息"
+            data-index="description"
+          />
+
+          <a-table-column
+            title="知识点文件"
+            data-index="fileName">
+            <template #cell="{record}">
+              <template v-if="record.fileName !== null">
+                <a :href="record.url" target="_blank">
+                  <icon-file />
+                  <span>{{ record.fileName }}</span>
+                </a>
+              </template>
+              <template v-else>
+                <!-- 上传文件 -->
+                <a-upload
+                  :action="uploadAction"
+                  :fileList="file ? [file] : []"
+                  :show-file-list="false"
+                  :headers="{token}"
+                  :data="{...fileParams,userId,'knowledgeId': record.id}"
+                  @change="onChange"
+                  @success="onSuccess"
+                  @before-upload="onBeforeUpload"
+                  @error="onError"
+                  ref="uploadRef"
+                />
+              </template>
             </template>
           </a-table-column>
-          <a-table-column
-            :title="$t('searchTable.columns.filterType')"
-            data-index="filterType"
-          >
-            <template #cell="{ record }">
-              {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
-            </template>
-          </a-table-column>
-          <a-table-column
-            :title="$t('searchTable.columns.count')"
-            data-index="count"
-          />
-          <a-table-column
-            :title="$t('searchTable.columns.createdTime')"
-            data-index="createdTime"
-          />
-          <a-table-column
-            :title="$t('searchTable.columns.status')"
-            data-index="status"
-          >
-            <template #cell="{ record }">
-              <span v-if="record.status === 'offline'" class="circle"></span>
-              <span v-else class="circle pass"></span>
-              {{ $t(`searchTable.form.status.${record.status}`) }}
-            </template>
-          </a-table-column>
+          <a-table-column title="发布时间" data-index="createDate" />
+
+
+
           <a-table-column
             :title="$t('searchTable.columns.operations')"
             data-index="operations"
           >
-            <template #cell>
-              <a-button v-permission="['admin']" type="text" size="small">
-                {{ $t('searchTable.columns.operations.view') }}
-              </a-button>
+            <template #cell="{ record }">
+              <a-popconfirm content="确认是否要进行删除(这是一个不可逆操作)"
+                            @ok="confirmHandleDelCourseOk(record)"
+                            :ok-loading="confirmLoading"
+                            type="warning">
+                <a-button v-permission="['admin','teacher']"
+                          type="text" size="small"
+                          status="danger">
+                  删除
+                </a-button>
+              </a-popconfirm>
             </template>
           </a-table-column>
         </template>
       </a-table>
     </a-card>
+    <a-modal title="新建知识点"
+             @cancel="modalHandleKnowledgeCancel"
+             @ok="modalHandleKnowledgeOk"
+             :ok-loading="modalOkLoading"
+             :visible="modalKnowledgeVisible">
+      <a-form :model="modalKnowledgeForm">
+        <a-form-item field="name" label="知识点名称" required>
+          <a-input v-model="modalKnowledgeForm.name" placeholder="请输入知识点名称"/>
+        </a-form-item>
+        <a-form-item field="description" label="知识点描述">
+          <a-textarea v-model="modalKnowledgeForm.description"
+                      :max-length="500"
+                      allow-clear
+                      show-word-limit
+                      placeholder="请输入知识点描述"/>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive } from 'vue';
-import { useI18n } from 'vue-i18n';
-import useLoading from '@/hooks/loading';
-import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-import { Pagination, Options } from '@/types/global';
+import { computed, ref, reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import useLoading from "@/hooks/loading";
+import { queryPolicyList, PolicyRecord, PolicyParams } from "@/api/list";
+import { Pagination, Options } from "@/types/global";
+import { addNewRole, delRole, queryAuthInfo, RoleParams, RoleRecord } from "@/api/user-manager";
+import { HttpResponse } from "@/api/interceptor";
+import { Message, Modal } from "@arco-design/web-vue";
+import _ from "lodash";
+import { TableData } from "@arco-design/web-vue/es/table/interface.d";
+import {
+  addKnowledge,
+  Course,
+  delCourse,
+  Knowledge,
+  queryCourse,
+  queryKnowledge,
+  queryTeacher,
+  Teacher,
+  updateCourseBaseInfo
+} from "@/api/course";
+import { BaseParams } from "@/api/base-model";
+import { FileItem } from "@arco-design/web-vue/es/upload/interfaces";
+import { getToken, getUserId } from "@/utils/auth";
 
-const generateFormModel = () => {
-  return {
-    number: '',
-    name: '',
-    contentType: '',
-    filterType: '',
-    createdTime: [],
-    status: '',
-  };
-};
 const { loading, setLoading } = useLoading(true);
-const { t } = useI18n();
-const renderData = ref<PolicyRecord[]>([]);
-const formModel = ref(generateFormModel());
+const renderData = ref<Knowledge[]>([]);
 const basePagination: Pagination = {
   current: 1,
-  pageSize: 20,
+  pageSize: 10
 };
 const pagination = reactive({
-  ...basePagination,
+  ...basePagination
 });
-const contentTypeOptions = computed<Options[]>(() => [
-  {
-    label: t('searchTable.form.contentType.img'),
-    value: 'img',
-  },
-  {
-    label: t('searchTable.form.contentType.horizontalVideo'),
-    value: 'horizontalVideo',
-  },
-  {
-    label: t('searchTable.form.contentType.verticalVideo'),
-    value: 'verticalVideo',
-  },
-]);
-const filterTypeOptions = computed<Options[]>(() => [
-  {
-    label: t('searchTable.form.filterType.artificial'),
-    value: 'artificial',
-  },
-  {
-    label: t('searchTable.form.filterType.rules'),
-    value: 'rules',
-  },
-]);
-const statusOptions = computed<Options[]>(() => [
-  {
-    label: t('searchTable.form.status.online'),
-    value: 'online',
-  },
-  {
-    label: t('searchTable.form.status.offline'),
-    value: 'offline',
-  },
-]);
+
 const fetchData = async (
-  params: PolicyParams = { current: 1, pageSize: 20 }
+  params: BaseParams = { page: 1, size: 20 }
 ) => {
   setLoading(true);
   try {
-    const { data } = await queryPolicyList(params);
+    const { data } = await queryKnowledge(params);
     renderData.value = data.list;
-    pagination.current = params.current;
+    pagination.current = params.page;
     pagination.total = data.total;
   } catch (err) {
     // you can report use errorHandler or other
@@ -298,20 +170,130 @@ const fetchData = async (
     setLoading(false);
   }
 };
-
-const search = () => {
-  fetchData({
-    ...basePagination,
-    ...formModel.value,
-  } as unknown as PolicyParams);
-};
 const onPageChange = (current: number) => {
-  fetchData({ ...basePagination, current });
+  fetchData({ ...basePagination, page: current, size: basePagination.pageSize });
 };
 
 fetchData();
-const reset = () => {
-  formModel.value = generateFormModel();
+
+// 模态框ok loading 动画
+const modalOkLoading = ref<boolean>(false);
+
+// 新建知识点
+const modalKnowledgeVisible = ref<boolean>(false);
+const modalKnowledgeForm = ref<Knowledge>({});
+
+
+const modalHandleKnowledgeOk = () => {
+  // if (_.isNil(modalKnowledgeForm.value.authorTeacherId) && _.isNil(modalKnowledgeForm.value.id)) {
+  //   Message.error("课程和教师不能为空，请检查后重新提交");
+  //   return;
+  // }
+  // fetchOrderTeacher();
+};
+const modalHandleKnowledgeCancel = () => {
+  modalKnowledgeForm.value = {} as Knowledge;
+  modalKnowledgeVisible.value = false;
+};
+
+const fetchAddKnowledge = async () => {
+  // 开启ok loading 动画
+  modalOkLoading.value = true;
+  try {
+    // 新建成功后
+    await addKnowledge(modalKnowledgeForm.value);
+    Message.success("添加知识点成功");
+    // 重新刷新列表数据
+    await fetchData();
+    // 关闭模态框
+    modalKnowledgeVisible.value = false;
+  } catch (e) {
+
+  } finally {
+    modalOkLoading.value = false;
+  }
+};
+
+
+// 上传文件
+const uploadAction = ref(`${import.meta.env.VITE_API_BASE_URL}/course-course/know/admin/know/file`);
+const file = ref<FileItem>();
+const token = ref(getToken());
+const userId = ref(getUserId());
+const fileParams = reactive({
+  fileName: '',
+  fileType: ''
+})
+
+const onChange = (_, currentFile: FileItem) => {
+  file.value = {} as FileItem // init
+  file.value = {
+    ...currentFile
+    // url: URL.createObjectURL(currentFile.file),
+  };
+};
+
+const onBeforeUpload = (file)=>{
+  return new Promise((resolve, reject) => {
+    fileParams.fileName = file.name;
+    fileParams.fileType = file.type;
+    Modal.confirm({
+      title: '请再次确认',
+      content: `请确认上传文件名: ${fileParams.fileName}, 文件类型: ${fileParams.fileType}的文件`,
+      onOk: () => resolve(true),
+      onCancel: () => reject('cancel'),
+    });
+  });
+}
+
+const onSuccess = ({response}) => {
+  console.log(response);
+  if (response.code !== 200) {
+    Message.error(response.message);
+    return;
+  }
+  Message.success("文件上传成功");
+  // 刷新列表
+  fetchData({page: basePagination.current, size: basePagination.pageSize});
+};
+const onError = (resp) => {
+  console.log(resp);
+  if (resp.response.code !== 200) {
+    Message.error(resp.response.message);
+  }
+};
+
+
+// 上架下架课程
+const switchLoading = ref(false);
+const fetchSwitchCourseStatus = async (record: Course) => {
+  switchLoading.value = true;
+  try {
+    const id = record.id;
+    const status = record.status === 0 ? 1 : 0;
+    await updateCourseBaseInfo({ id, status });
+    Message.success("课程状态更新成功");
+  } finally {
+    switchLoading.value = false;
+  }
+};
+
+
+// 删除课程
+const confirmLoading = ref<boolean>(false);
+const confirmHandleDelCourseOk = (record: Course) => {
+  fetchDelCourse(record.id);
+};
+const fetchDelCourse = async (id: number) => {
+  confirmLoading.value = true;
+  try {
+    await delCourse(id);
+    Message.success("删除成功");
+    // 重新加载列表数据
+    await fetchData();
+  } finally {
+    confirmLoading.value = false;
+  }
 };
 </script>
 
@@ -319,11 +301,25 @@ const reset = () => {
 .container {
   padding: 0 20px 20px 20px;
 }
+
 :deep(.arco-table-th) {
   &:last-child {
     .arco-table-th-item-title {
       margin-left: 16px;
     }
+  }
+}
+
+a{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 14px;
+  color: rgb(var(--primary-6));
+  transition: .15s linear;
+  -webkit-transition: .15s linear;
+  &:hover{
+    color: rgba(var(--primary-6),.6);;
   }
 }
 </style>
