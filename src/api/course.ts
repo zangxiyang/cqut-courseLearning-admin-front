@@ -84,7 +84,23 @@ export interface Teacher {
   id: number;
   nickName: string;
 }
-
+export interface SaveVod{
+  userId: number
+  fileId: string
+}
+export interface Vod{
+  id: number,
+  fileId: string,
+  name: string,
+  userId: number,
+  nickName: string,
+  url: string,
+  type: string,
+  status: number,
+  updateDate: string,
+  size: number,
+  duration: number
+}
 
 // 创建班级
 export function createCourse(dto: IModelUnitCreateCourse) {
@@ -143,6 +159,17 @@ export function delKnowledge(id: number){
 // 获取上传视频许可签名
 export function getSignature() {
   return axios.get(`/course-cos/vod/sign`);
+}
+// 持久化上传结果
+export function saveVod(params: SaveVod): Promise<HttpResponse<string>>{
+  return axios.post(`/course-cos/vod/save`, params)
+}
+// 获取视频列表
+export function queryVodListByPage(params: BaseParams){
+  return axios.get<BasePageRes<Vod[]>>(`/course-cos/vod/page`, {params})
+}
+export function queryVodList(){
+  return axios.get<Vod[]>(`/course-cos/vod/list`)
 }
 
 
