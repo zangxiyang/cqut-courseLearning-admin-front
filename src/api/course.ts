@@ -171,5 +171,9 @@ export function queryVodListByPage(params: BaseParams){
 export function queryVodList(){
   return axios.get<Vod[]>(`/course-cos/vod/list`)
 }
+// 删除视频
+export function delVod(id: number){
+  return axios.delete(`/course-cos/vod/del/${id}`);
+}
 
 

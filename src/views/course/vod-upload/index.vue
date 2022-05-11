@@ -95,8 +95,8 @@
                   </a>
                   <a-button type="text" size="small" :data-clipboard-text="record.url" class="copy-button">复制地址</a-button>
                   <a-popconfirm content="确认是否要进行删除(这是一个不可逆操作)"
-                                @ok="confirmHandleDelCourseOk(record)"
                                 :ok-loading="confirmLoading"
+                                @ok="confirmHandleDelOk(record)"
                                 type="warning">
                     <a-button v-permission="['admin','teacher']"
                               type="text" size="small"
@@ -119,7 +119,16 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { getSignature, Knowledge, queryKnowledge, queryVodListByPage, saveVod, Vod } from "@/api/course";
+import {
+  delKnowledge,
+  delVod,
+  getSignature,
+  Knowledge,
+  queryKnowledge,
+  queryVodListByPage,
+  saveVod,
+  Vod
+} from "@/api/course";
 import tcVod from "vod-js-sdk-v6";
 import axios from "axios";
 import { TcVodFileInfo } from "vod-js-sdk-v6/src/uploader";
@@ -286,6 +295,23 @@ const formatSeconds = (seconds: number) => {
 
 };
 
+
+// 删除视频
+const confirmLoading = ref<boolean>(false);
+const confirmHandleDelOk = (record: Vod)=>{
+  fetchDelVod(record.id);
+}
+const fetchDelVod = async (id: number) => {
+  confirmLoading.value = true;
+  try {
+    await delVod(id);
+    Message.success("删除成功");
+    // 重新加载列表数据
+    await fetchData({page: basePagination.current, size: basePagination.pageSize});
+  } finally {
+    confirmLoading.value = false;
+  }
+};
 
 </script>
 
