@@ -58,7 +58,10 @@
               </a-button>
             </a-form-item>
             <a-form-item class="bottom-line" label="视频地址" :field="`chapterNode${nodeIndex}`">
-              <a-input v-model="nodeItem.videoUrl" placeholder="请输入视频地址"/>
+              <a-auto-complete v-model="nodeItem.videoUrl"
+                                @focus="fetchQueryVod"
+                               :data="vodOptions"
+                               placeholder="请输入视频地址"/>
             </a-form-item>
           </template>
         </div>
@@ -79,9 +82,10 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, watch } from "vue";
+import { computed, PropType, ref, watch } from "vue";
   import { FormInstance } from '@arco-design/web-vue/es/form';
-  import { IModelChapterInfo } from "@/api/course";
+import { IModelChapterInfo, Knowledge, queryKnowledge, queryVodList, Vod } from "@/api/course";
+import { Options } from "@/types/global";
 
   const props = defineProps({
     clear: Boolean as PropType<boolean>
@@ -167,6 +171,33 @@ import { PropType, ref, watch } from "vue";
   const goPrev = () => {
     emits('changeStep', 'backward');
   };
+
+
+
+// 加载视频列表
+const vodListData = ref<Vod[]>([]);
+const vodLoading = ref(false);
+const fetchQueryVod = async () => {
+  vodLoading.value = true;
+  try {
+    const { data } = await queryVodList();
+    vodListData.value = data;
+  } catch (e) {
+
+  } finally {
+    vodLoading.value = false;
+  }
+};
+const vodOptions = computed<Options[]>(() => {
+  return vodListData.value.map((val) => {
+    return {
+      label: val.name,
+      value: val.url
+    };
+  });
+});
+
+
 </script>
 
 <style scoped lang="less">

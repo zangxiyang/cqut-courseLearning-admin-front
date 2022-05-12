@@ -67,7 +67,7 @@
           />
 
           <a-table-column
-            title="知识点文件"
+            title="课程文件"
             data-index="fileName">
             <template #cell="{record}">
               <template v-if="record.fileName !== null">
