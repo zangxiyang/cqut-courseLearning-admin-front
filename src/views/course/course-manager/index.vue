@@ -65,8 +65,8 @@
             <template #cell="{record}">
               <a-switch
                 :default-checked="record.status === 1"
-                :loading="switchLoading"
-                @change="fetchSwitchCourseStatus(record)"
+                :loading="record.statusLoading"
+                @change="changeCourseStatus(record)"
                 checked-color="#19af00"
                 unchecked-color="#F53F3F">
                 <template #checked>
@@ -159,7 +159,7 @@ import { Pagination, Options } from "@/types/global";
 import { addNewRole, delRole, queryAuthInfo, RoleParams, RoleRecord } from "@/api/user-manager";
 import { HttpResponse } from "@/api/interceptor";
 import { Message } from "@arco-design/web-vue";
-import _ from "lodash";
+import _, { values } from "lodash";
 import { TableData } from "@arco-design/web-vue/es/table/interface.d";
 import {
   bindKnowledge,
@@ -247,18 +247,18 @@ const fetchOrderTeacher = async () => {
 
 
 // 上架下架课程
-const switchLoading = ref(false);
-const fetchSwitchCourseStatus = async (record: Course) => {
-  switchLoading.value = true;
+const changeCourseStatus = async (record: Course)=>{
+  record.statusLoading = true;
   try {
-    const id = record.id;
-    const status = record.status === 0 ? 1 : 0;
-    await updateCourseBaseInfo({ id, status });
+    await updateCourseBaseInfo({ id: record.id, status: record.status });
     Message.success("课程状态更新成功");
+  } catch (e){
+    // 回退
+    record.status = record.status === 0 ? 1: 0;
   } finally {
-    switchLoading.value = false;
+    record.statusLoading = false;
   }
-};
+}
 
 // 加载老师列表
 const teacherListData = ref<Teacher[]>([]);
