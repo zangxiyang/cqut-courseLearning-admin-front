@@ -16,7 +16,7 @@ export default {
       meta: {
         locale: 'menu.dashboard.workplace',
         requiresAuth: true,
-        roles: ['*'],
+        roles: ['admin','teacher'],
       },
     },
 
@@ -27,7 +27,7 @@ export default {
       meta: {
         locale: 'menu.dashboard.monitor',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
   ],

@@ -16,7 +16,7 @@ export default {
       meta: {
         locale: 'menu.form.step',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
     {
@@ -26,7 +26,7 @@ export default {
       meta: {
         locale: 'menu.form.group',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
   ],

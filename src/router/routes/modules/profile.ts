@@ -16,7 +16,7 @@ export default {
       meta: {
         locale: 'menu.profile.basic',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
   ],

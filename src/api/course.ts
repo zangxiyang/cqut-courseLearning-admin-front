@@ -68,6 +68,10 @@ export interface Knowledge {
   fileName?: string;
   url?: string;
 }
+export interface BindKnowledge{
+  courseId: number,
+  knowledgeIds: number[]
+}
 
 export interface CourseFile {
   courseId: number,
@@ -174,6 +178,19 @@ export function queryVodList(){
 // 删除视频
 export function delVod(id: number){
   return axios.delete(`/course-cos/vod/del/${id}`);
+}
+
+// 绑定知识点
+export function bindKnowledge(params: BindKnowledge): Promise<HttpResponse>{
+  return axios.post(`/course-course/course/admin/know`, params);
+}
+// 删除绑定知识点
+export function delBindKnowledge(params: BindKnowledge): Promise<HttpResponse>{
+  return axios.delete(`/course-course/course/admin/know`, {data: params});
+}
+// 查询课程绑定知识点
+export function queryBindKnowledge(courseId: number){
+  return axios.get<number[]>(`/course-course/course/admin/know/${courseId}`);
 }
 
 

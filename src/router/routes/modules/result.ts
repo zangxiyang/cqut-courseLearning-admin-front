@@ -16,7 +16,7 @@ export default {
       meta: {
         locale: 'menu.result.success',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
     {
@@ -26,7 +26,7 @@ export default {
       meta: {
         locale: 'menu.result.error',
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
   ],

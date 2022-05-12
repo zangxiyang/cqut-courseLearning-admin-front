@@ -6,7 +6,7 @@ export default {
     locale: 'menu.exception',
     requiresAuth: true,
     icon: 'icon-exclamation-circle',
-    order: 6,
+    order: 6
   },
   children: [
     {
@@ -15,8 +15,9 @@ export default {
       component: () => import('@/views/exception/403/index.vue'),
       meta: {
         locale: 'menu.exception.403',
+        hideInMenu: true,
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['user'],
       },
     },
     {
@@ -27,6 +28,7 @@ export default {
         locale: 'menu.exception.404',
         requiresAuth: true,
         roles: ['*'],
+        hideInMenu: true
       },
     },
     {
@@ -37,6 +39,7 @@ export default {
         locale: 'menu.exception.500',
         requiresAuth: true,
         roles: ['*'],
+        hideInMenu: true
       },
     },
   ],

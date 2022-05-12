@@ -92,6 +92,9 @@
                         type="text">
                 指派教师
               </a-button>
+              <a-button type="text" size="small" @click="modalKnowledgeOpen(record.id)">
+                知识点
+              </a-button>
               <a-popconfirm content="确认是否要进行删除(这是一个不可逆操作)"
                             @ok="confirmHandleDelCourseOk(record)"
                             :ok-loading="confirmLoading"
@@ -124,6 +127,26 @@
         </a-form-item>
       </a-form>
     </a-modal>
+
+    <a-modal title="知识点管理" :ok-loading="modalOkLoading"
+             @ok="modalKnowledgeOk"
+             :ok-button-props="{
+               disabled: knowledgeLoading
+             }"
+             @cancel="modalKnowledgeCancel" :visible="modalKnowledgeVisible">
+      <a-form :model="modalKnowledgeForm">
+        <a-form-item field="knowledgeIds" label="知识点">
+          <a-select
+            v-model="modalKnowledgeForm.knowledgeIds"
+            placeholder="请选择绑定的知识点"
+            :max-tag-count="5"
+            multiple
+            @focus="fetchQueryKnowledge"
+            :loading="knowledgeLoading"
+            :options="knowledgeOptions" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
@@ -138,7 +161,16 @@ import { HttpResponse } from "@/api/interceptor";
 import { Message } from "@arco-design/web-vue";
 import _ from "lodash";
 import { TableData } from "@arco-design/web-vue/es/table/interface.d";
-import { Course, delCourse, queryCourse, queryTeacher, Teacher, updateCourseBaseInfo } from "@/api/course";
+import {
+  bindKnowledge,
+  BindKnowledge,
+  Course, delBindKnowledge,
+  delCourse, Knowledge, queryBindKnowledge,
+  queryCourse, queryKnowledge,
+  queryTeacher,
+  Teacher,
+  updateCourseBaseInfo
+} from "@/api/course";
 import { BaseParams } from "@/api/base-model";
 
 const { loading, setLoading } = useLoading(true);
@@ -246,6 +278,71 @@ const teacherOptions = computed<Options[]>(() => {
   return teacherListData.value.map((val) => {
     return {
       label: val.nickName,
+      value: val.id
+    };
+  });
+});
+
+// 知识点管理
+const modalKnowledgeVisible = ref(false);
+const modalKnowledgeForm = ref<BindKnowledge>({
+  courseId: -1,
+  knowledgeIds: []
+});
+const modalKnowledgeOpen = (courseId: number) => {
+  modalKnowledgeForm.value.courseId = courseId;
+  modalKnowledgeVisible.value = true;
+  fetchQueryBindKnowledge(courseId);
+};
+const modalKnowledgeCancel = () => {
+  modalKnowledgeForm.value.courseId = -1;
+  modalKnowledgeForm.value.knowledgeIds = [];
+  modalKnowledgeVisible.value = false;
+};
+const modalKnowledgeOk = () => {
+  fetchBindKnowledge();
+};
+
+const fetchQueryBindKnowledge = async (courseId: number) => {
+  knowledgeLoading.value = true;
+  try {
+    await fetchQueryKnowledge();
+    const { data } = await queryBindKnowledge(courseId);
+    modalKnowledgeForm.value.knowledgeIds = data;
+  } finally {
+    knowledgeLoading.value = false;
+  }
+};
+const fetchBindKnowledge = async () => {
+  modalOkLoading.value = true;
+  try {
+    const { message } = await bindKnowledge(modalKnowledgeForm.value);
+    Message.success(message);
+    modalKnowledgeCancel();
+  }
+  finally {
+    modalOkLoading.value = false;
+  }
+};
+
+// 加载知识点列表
+const knowledgeListData = ref<Knowledge[]>([]);
+const knowledgeLoading = ref(false);
+const fetchQueryKnowledge = async () => {
+  knowledgeLoading.value = true;
+  try {
+    const { data } = await queryKnowledge({ page: 1, size: 1000 });
+    knowledgeListData.value = data.list;
+  } catch (e) {
+
+  } finally {
+    knowledgeLoading.value = false;
+  }
+};
+const knowledgeOptions = computed<Options[]>(() => {
+  return knowledgeListData.value.map((val) => {
+    return {
+      label: val.name,
       value: val.id
     };
   });
