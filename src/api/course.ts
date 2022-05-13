@@ -56,6 +56,7 @@ export interface Course {
   className: string,
   thumb: string,
   status: number,
+  statusSwitch: boolean,
   statusLoading: boolean,
   detailId: number,
   publishDate: string

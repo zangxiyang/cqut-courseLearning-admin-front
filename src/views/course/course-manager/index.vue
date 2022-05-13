@@ -60,11 +60,11 @@
 
           <a-table-column
             title="状态"
-            data-index="status">
+            data-index="statusSwitch">
 
-            <template #cell="{record}">
+            <template #cell="{record,column,rowIndex}">
               <a-switch
-                :default-checked="record.status === 1"
+                v-model="renderData[rowIndex].statusSwitch"
                 :loading="record.statusLoading"
                 @change="changeCourseStatus(record)"
                 checked-color="#19af00"
@@ -190,6 +190,7 @@ const fetchData = async (
   try {
     const { data } = await queryCourse(params);
     renderData.value = data.list;
+    renderData.value.forEach((value) => value.statusSwitch = value.status === 1);
     pagination.current = params.page;
     pagination.total = data.total;
   } catch (err) {
@@ -250,11 +251,13 @@ const fetchOrderTeacher = async () => {
 const changeCourseStatus = async (record: Course)=>{
   record.statusLoading = true;
   try {
-    await updateCourseBaseInfo({ id: record.id, status: record.status === 0? 1: 0 });
+    await updateCourseBaseInfo({ id: record.id, status: record.statusSwitch ? 0: 1});
+    // 更新当前数据列
+    record.status = record.statusSwitch? 1:0;
     Message.success("课程状态更新成功");
   } catch (e){
     // 回退
-    record.status = record.status === 0 ? 1: 0;
+    record.statusSwitch = !record.statusSwitch;
   } finally {
     record.statusLoading = false;
   }
