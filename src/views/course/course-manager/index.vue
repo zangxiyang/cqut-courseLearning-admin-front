@@ -250,7 +250,7 @@ const fetchOrderTeacher = async () => {
 const changeCourseStatus = async (record: Course)=>{
   record.statusLoading = true;
   try {
-    await updateCourseBaseInfo({ id: record.id, status: record.status });
+    await updateCourseBaseInfo({ id: record.id, status: record.status === 0? 1: 0 });
     Message.success("课程状态更新成功");
   } catch (e){
     // 回退
