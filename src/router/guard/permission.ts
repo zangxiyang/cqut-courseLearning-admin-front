@@ -3,7 +3,7 @@ import NProgress from 'nprogress'; // progress bar
 
 import usePermission from '@/hooks/permission';
 import { useUserStore } from '@/store';
-import { getUserId, isLogin } from "@/utils/auth";
+import { clearToken, getUserId, isLogin } from "@/utils/auth";
 import appRoutes from '../routes';
 
 export default function setupPermissionGuard(router: Router) {
@@ -32,6 +32,7 @@ export default function setupPermissionGuard(router: Router) {
           await userStore.info(getUserId());
           crossroads();
         } catch (error) {
+          clearToken(); // 清除登录信息 重新登录
           next({
             name: 'login',
             query: {
