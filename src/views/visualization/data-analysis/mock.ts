@@ -92,8 +92,8 @@ setupMock({
       const generateData = () => {
         const list = new Array(7).fill(0).map((_item, index) => ({
           ranking: index + 1,
-          author: Mock.mock('@ctitle(5)'),
-          contentCount: Mock.mock(/[0-9]{4}/),
+          author: Mock.mock('@ctitle(3)'),
+          contentCount: Mock.mock(/[0-9]{2,3}/),
           clickCount: Mock.mock(/[0-9]{4}/),
         }));
         return {

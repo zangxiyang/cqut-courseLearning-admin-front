@@ -2,7 +2,7 @@
   <a-spin :loading="loading" style="width: 100%">
     <a-card class="general-card" :header-style="{ paddingBottom: '14px' }">
       <template #title>
-        {{ $t('dataAnalysis.popularAuthor') }}
+        热门课程榜单
       </template>
       <template #extra>
         <a-link>{{ $t('workplace.viewMore') }}</a-link>
@@ -26,7 +26,7 @@
           >
           </a-table-column>
           <a-table-column
-            :title="$t('dataAnalysis.popularAuthor.column.content')"
+            title="学习人数"
             data-index="contentCount"
             :sortable="{
               sortDirections: ['ascend', 'descend'],

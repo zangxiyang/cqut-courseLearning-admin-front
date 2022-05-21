@@ -122,8 +122,12 @@
           <a-avatar
             :size="32"
             :style="{ marginRight: '8px', cursor: 'pointer' }"
+            v-if="avatar"
           >
             <img alt="avatar" :src="avatar" />
+          </a-avatar>
+          <a-avatar v-else :size="32" :style="{ marginRight: '8px', cursor: 'pointer' }">
+            <icon-user/>
           </a-avatar>
           <template #content>
             <a-doption>

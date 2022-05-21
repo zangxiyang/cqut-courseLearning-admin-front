@@ -19,6 +19,16 @@ export default {
         roles: ['admin','teacher'],
       },
     },
+    {
+      path: 'data-analysis',
+      name: 'dataAnalysis',
+      component: () => import('@/views/visualization/data-analysis/index.vue'),
+      meta: {
+        locale: 'menu.visualization.dataAnalysis',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
 
     {
       path: 'monitor',

@@ -10,16 +10,6 @@ export default {
   },
   children: [
     {
-      path: 'data-analysis',
-      name: 'dataAnalysis',
-      component: () => import('@/views/visualization/data-analysis/index.vue'),
-      meta: {
-        locale: 'menu.visualization.dataAnalysis',
-        requiresAuth: true,
-        roles: ['user'],
-      },
-    },
-    {
       path: 'multi-dimension-data-analysis',
       name: 'multiDimensionDataAnalysis',
       component: () =>

@@ -2,7 +2,7 @@
   <a-col class="banner">
     <a-col :span="8">
       <a-typography-title :heading="5" style="margin-top: 0">
-        {{ $t('workplace.welcome') }} {{ userInfo.name }}
+        {{ $t('workplace.welcome')}} {{ userInfo.nickName }}
       </a-typography-title>
     </a-col>
     <a-divider class="panel-border" />
@@ -10,15 +10,17 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue';
   import { useUserStore } from '@/store';
+  import { storeToRefs } from "pinia";
+  import { computed } from "vue";
 
   const userStore = useUserStore();
-  const userInfo = computed(() => {
+  const userInfo = computed(()=>{
     return {
-      name: userStore.name,
-    };
+      nickName: userStore.nickName
+    }
   });
+
 </script>
 
 <style scoped lang="less">

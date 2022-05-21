@@ -108,6 +108,17 @@ export interface Vod{
   duration: number
 }
 
+export interface CourseStatistics{
+  date: string,
+  count: number
+}
+
+export interface DashBoardData {
+  courseCount: number,
+  vodCount: number,
+  dayNewCommentCount: number
+}
+
 // 创建班级
 export function createCourse(dto: IModelUnitCreateCourse) {
   return axios.post(`/course-course/course/admin/course`, dto);
@@ -193,6 +204,18 @@ export function delBindKnowledge(params: BindKnowledge): Promise<HttpResponse>{
 // 查询课程绑定知识点
 export function queryBindKnowledge(courseId: number){
   return axios.get<number[]>(`/course-course/course/admin/know/${courseId}`);
+}
+
+// 查询近七日的课程数量统计
+export function queryCourseStatistics (){
+  return axios.get<CourseStatistics[]>(`/course-course/course/admin/statistics`);
+}
+
+
+
+// 查询控制台的数据
+export function queryDashBoardData(){
+  return axios.get<DashBoardData>(`/course-course/course/admin/dashboard`);
 }
 
 

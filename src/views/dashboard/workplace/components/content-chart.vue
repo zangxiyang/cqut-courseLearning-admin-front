@@ -6,11 +6,11 @@
       :body-style="{
         paddingTop: '20px',
       }"
-      :title="$t('workplace.contentData')"
+      title="近7日评论趋势"
     >
-      <template #extra>
+      <!--<template #extra>
         <a-link>{{ $t('workplace.viewMore') }}</a-link>
-      </template>
+      </template>-->
       <Chart height="289px" :option="chartOption" />
     </a-card>
   </a-spin>
@@ -24,6 +24,7 @@
   import useChartOption from '@/hooks/chart-option';
   import { ToolTipFormatterParams } from '@/types/echarts';
   import { AnyObject } from '@/types/global';
+  import { queryCourseStatistics } from "@/api/course";
 
   function graphicFactory(side: AnyObject) {
     return {
@@ -96,12 +97,12 @@
         axisLine: {
           show: false,
         },
-        axisLabel: {
+/*        axisLabel: {
           formatter(value: any, idx: number) {
             if (idx === 0) return value;
             return `${value}k`;
           },
-        },
+        },*/
         splitLine: {
           show: true,
           lineStyle: {
@@ -116,8 +117,8 @@
           const [firstElement] = params as ToolTipFormatterParams[];
           return `<div>
             <p class="tooltip-title">${firstElement.axisValueLabel}</p>
-            <div class="content-panel"><span>总内容量</span><span class="tooltip-value">${(
-              Number(firstElement.value) * 10000
+            <div class="content-panel"><span>总评论数</span><span class="tooltip-value">${(
+              Number(firstElement.value)
             ).toLocaleString()}</span></div>
           </div>`;
         },
@@ -177,7 +178,13 @@
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: chartData } = await queryContentData();
+      const { data } = await queryCourseStatistics();
+      const chartData: ContentDataRecord[] = data.map((val)=>{
+        return {
+          x: val.date,
+          y: val.count
+        }
+      });
       chartData.forEach((el: ContentDataRecord, idx: number) => {
         xAxis.value.push(el.x);
         chartsData.value.push(el.y);

@@ -14,7 +14,7 @@
           <component :is="link.icon" />
         </div>
         <a-typography-paragraph class="text">
-          {{ $t(link.text) }}
+          {{ link.text }}
         </a-typography-paragraph>
       </a-col>
     </a-row>
@@ -24,11 +24,11 @@
 
 <script lang="ts" setup>
   const links = [
-    { text: 'workplace.contentManagement', icon: 'icon-file' },
-    { text: 'workplace.contentStatistical', icon: 'icon-storage' },
-    { text: 'workplace.advanced', icon: 'icon-settings' },
-    { text: 'workplace.onlinePromotion', icon: 'icon-mobile' },
-    { text: 'workplace.contentPutIn', icon: 'icon-fire' },
+    { text: '课程文件管理', icon: 'icon-file' },
+    { text: '课程管理', icon: 'icon-storage' },
+    { text: '权限管理', icon: 'icon-settings' },
+    { text: '班级管理', icon: 'icon-mobile' },
+    { text: '知识点管理', icon: 'icon-fire' },
   ];
 </script>
 

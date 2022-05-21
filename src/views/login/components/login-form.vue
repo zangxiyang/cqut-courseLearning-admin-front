@@ -76,7 +76,7 @@
   const userStore = useUserStore();
   const userInfo = reactive({
     userName: 'admin',
-    passWord: 'admin',
+    passWord: '123456',
   });
   const handleSubmit = async ({
     errors,

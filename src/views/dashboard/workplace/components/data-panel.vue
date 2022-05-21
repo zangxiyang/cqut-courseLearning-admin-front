@@ -12,15 +12,15 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.onlineContent')"
-          :value="373.5"
-          :precision="1"
+          title="课程总数"
+          :value="dashBoardData.courseCount"
+          :precision="0"
           :value-from="0"
           animation
           show-group-separator
         >
           <template #suffix>
-            W+ <span class="unit">{{ $t('workplace.pecs') }}</span>
+            <span class="unit">{{ $t('workplace.pecs') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -37,8 +37,8 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.putIn')"
-          :value="368"
+          title="投放视频数"
+          :value="dashBoardData.vodCount"
           :value-from="0"
           animation
           show-group-separator
@@ -52,6 +52,7 @@
     <a-grid-item
       class="panel-col"
       :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      style="border-right: none"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -62,7 +63,7 @@
         </a-avatar>
         <a-statistic
           :title="$t('workplace.newDay')"
-          :value="8874"
+          :value="dashBoardData.dayNewCommentCount"
           :value-from="0"
           animation
           show-group-separator
@@ -73,7 +74,7 @@
         </a-statistic>
       </a-space>
     </a-grid-item>
-    <a-grid-item
+    <!--<a-grid-item
       class="panel-col"
       :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
       style="border-right: none"
@@ -95,14 +96,33 @@
           <template #suffix> % <icon-caret-up class="up-icon" /> </template>
         </a-statistic>
       </a-space>
-    </a-grid-item>
+    </a-grid-item>-->
     <a-grid-item :span="24">
       <a-divider class="panel-border" />
     </a-grid-item>
   </a-grid>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+
+import { ref } from "vue";
+import { DashBoardData, queryDashBoardData } from "@/api/course";
+
+const dashBoardData = ref<DashBoardData>({
+  dayNewCommentCount: 0,
+  courseCount: 0,
+  vodCount: 0
+});
+
+const fetchDashBoardData = async ()=>{
+  const {data} = await queryDashBoardData();
+  dashBoardData.value = {
+    ...data
+  }
+}
+fetchDashBoardData();
+
+</script>
 
 <style lang="less" scoped>
   .arco-grid.panel {
