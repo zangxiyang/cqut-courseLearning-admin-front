@@ -70,7 +70,8 @@ export interface Knowledge {
   fileName?: string;
   url?: string;
 }
-export interface BindKnowledge{
+
+export interface BindKnowledge {
   courseId: number,
   knowledgeIds: number[]
 }
@@ -90,11 +91,13 @@ export interface Teacher {
   id: number;
   nickName: string;
 }
-export interface SaveVod{
-  userId: number
-  fileId: string
+
+export interface SaveVod {
+  userId: number;
+  fileId: string;
 }
-export interface Vod{
+
+export interface Vod {
   id: number,
   fileId: string,
   name: string,
@@ -108,7 +111,7 @@ export interface Vod{
   duration: number
 }
 
-export interface CourseStatistics{
+export interface CourseStatistics {
   date: string,
   count: number
 }
@@ -130,8 +133,8 @@ export function getUserDetail(id: number) {
 }
 
 // 查询课程列表
-export function queryCourse(params: BaseParams) {
-  return axios.get<BasePageRes<Course[]>>(`/course-course/course/course`, { params });
+export function queryCourse(params: BaseParams, authorTeacherId: number | null) {
+  return axios.get<BasePageRes<Course[]>>(`/course-course/course/course`, { params: { ...params, authorTeacherId } });
 }
 
 // 查询课程文件列表
@@ -169,52 +172,58 @@ export function queryKnowledge(params: BaseParams) {
 export function addKnowledge(dto: Knowledge) {
   return axios.post(`/course-course/know/admin/know`, dto);
 }
-export function delKnowledge(id: number){
-  return axios.delete(`/course-course/know/admin/know/${id}` )
+
+export function delKnowledge(id: number) {
+  return axios.delete(`/course-course/know/admin/know/${id}`);
 }
 
 // 获取上传视频许可签名
 export function getSignature() {
   return axios.get(`/course-cos/vod/sign`);
 }
+
 // 持久化上传结果
-export function saveVod(params: SaveVod): Promise<HttpResponse<string>>{
-  return axios.post(`/course-cos/vod/save`, params)
+export function saveVod(params: SaveVod): Promise<HttpResponse<string>> {
+  return axios.post(`/course-cos/vod/save`, params);
 }
+
 // 获取视频列表
-export function queryVodListByPage(params: BaseParams){
-  return axios.get<BasePageRes<Vod[]>>(`/course-cos/vod/page`, {params})
+export function queryVodListByPage(params: BaseParams) {
+  return axios.get<BasePageRes<Vod[]>>(`/course-cos/vod/page`, { params });
 }
-export function queryVodList(){
-  return axios.get<Vod[]>(`/course-cos/vod/list`)
+
+export function queryVodList() {
+  return axios.get<Vod[]>(`/course-cos/vod/list`);
 }
+
 // 删除视频
-export function delVod(id: number){
+export function delVod(id: number) {
   return axios.delete(`/course-cos/vod/del/${id}`);
 }
 
 // 绑定知识点
-export function bindKnowledge(params: BindKnowledge): Promise<HttpResponse>{
+export function bindKnowledge(params: BindKnowledge): Promise<HttpResponse> {
   return axios.post(`/course-course/course/admin/know`, params);
 }
+
 // 删除绑定知识点
-export function delBindKnowledge(params: BindKnowledge): Promise<HttpResponse>{
-  return axios.delete(`/course-course/course/admin/know`, {data: params});
+export function delBindKnowledge(params: BindKnowledge): Promise<HttpResponse> {
+  return axios.delete(`/course-course/course/admin/know`, { data: params });
 }
+
 // 查询课程绑定知识点
-export function queryBindKnowledge(courseId: number){
+export function queryBindKnowledge(courseId: number) {
   return axios.get<number[]>(`/course-course/course/admin/know/${courseId}`);
 }
 
 // 查询近七日的课程数量统计
-export function queryCourseStatistics (){
+export function queryCourseStatistics() {
   return axios.get<CourseStatistics[]>(`/course-course/course/admin/statistics`);
 }
 
 
-
 // 查询控制台的数据
-export function queryDashBoardData(){
+export function queryDashBoardData() {
   return axios.get<DashBoardData>(`/course-course/course/admin/dashboard`);
 }
 

@@ -172,6 +172,9 @@ import {
   updateCourseBaseInfo
 } from "@/api/course";
 import { BaseParams } from "@/api/base-model";
+import { useUserStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { getUserId } from "@/utils/auth";
 
 const { loading, setLoading } = useLoading(true);
 const renderData = ref<Course[]>([]);
@@ -183,12 +186,20 @@ const pagination = reactive({
   ...basePagination
 });
 
+const userStore = useUserStore();
+const {role} = storeToRefs(userStore);
+
 const fetchData = async (
   params: BaseParams = { page: 1, size: 20 }
 ) => {
   setLoading(true);
   try {
-    const { data } = await queryCourse(params);
+    // 进行权限判断
+    const authorTeacherId = ref<number|null>(null);
+    if(role.value === 'teacher'){
+      authorTeacherId.value = getUserId();
+    }
+    const { data } = await queryCourse(params,authorTeacherId.value);
     renderData.value = data.list;
     renderData.value.forEach((value) => value.statusSwitch = value.status === 1);
     pagination.current = params.page;
